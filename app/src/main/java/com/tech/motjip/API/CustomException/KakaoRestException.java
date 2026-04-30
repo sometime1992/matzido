@@ -9,4 +9,13 @@ public class KakaoRestException extends Exception{
     {
         super("에러 내용: " + result.body());
     }
+
+    public KakaoRestException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public KakaoRestException(Throwable cause)
+    {
+        super(cause);
+    }
 }

@@ -3,18 +3,20 @@ package com.tech.motjip.API.KakaoMap;
 import android.app.Activity;
 
 import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.Lifecycle;
 
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.KakaoMapSdk;
+import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
 import com.tech.motjip.API.KakaoMap.CallbackInterface.IMapStartCallback;
+import com.tech.motjip.API.KakaoMap.Utils.MapHelper;
+import com.tech.motjip.Model.MapPostionVO;
 
 import lombok.NonNull;
 
-// 카카오맵을 초기화하고 뷰에 표시합니다.
+// 카카오맵을 초기화하고 뷰에 표시합니다.(맵객체 라이프사이클 제어를 위해 DefaultLifecycleObserver로 액티비티의 옵저버로 연결할필요있음)
 public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLifecycleObserver {
 
     // 콜백함수의 객체입니다.
@@ -34,9 +36,16 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     public void start(){
         mapView.start(this, new KakaoMapReadyCallback() {
             @Override
-            public void onMapReady(KakaoMap kakaoMap) {
+            public void onMapReady(@NonNull KakaoMap kakaoMap) {
                 // 준비가 완료되면 카카오맵 객체를 반환합니다
                 callback.onReady(kakaoMap);
+            }
+
+            // 맵 로드시 시작 좌표
+            @Override
+            @NonNull
+            public LatLng getPosition() {
+                return getPostion();
             }
         });
     }
@@ -51,6 +60,13 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     public String getHashKey()
     {
         return KakaoMapSdk.INSTANCE.getHashKey();
+    }
+
+    // 현재 사용자의 위치를 반환합니다.
+    private LatLng getPostion(){
+        // 임시로 피자헛 목동점 좌표 넣어둠 나중에 내 현재 GPS 위치 가져오는 함수로 바꿈
+        MapPostionVO vo = new MapPostionVO(37.53660174890449, 126.8819899200535);
+        return MapHelper.getLatLng(vo);
     }
 
     @Override
