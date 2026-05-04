@@ -21,6 +21,5 @@ public class KakaoAPITest {
         }catch(Exception e){
             e.printStackTrace();
         }
-
     }
 }

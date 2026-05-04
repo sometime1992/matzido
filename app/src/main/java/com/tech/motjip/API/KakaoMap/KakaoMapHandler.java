@@ -20,20 +20,21 @@ import lombok.NonNull;
 public class KakaoMapHandler {
     private final KakaoMap kakaoMap;
     private LabelStyles labelStyle;
-    public KakaoMapHandler(KakaoMap kakaomap){
+
+    public KakaoMapHandler(KakaoMap kakaomap) {
         this.kakaoMap = kakaomap;
         this.labelStyle = getDefaultLabelStyle();
     }
 
     // 카메라를 이동시킵니다.
     // https://apis.map.kakao.com/android_v2/docs/getting-started/precautions/#2-api-의-비동기-처리
-    public void moveCamera(@NonNull LatLng position){
+    public void moveCamera(@NonNull LatLng position) {
         kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(position));
     }
 
     // 맵에 마커를 찍습니다.
     // https://apis.map.kakao.com/android_v2/docs/api-guide/label/label/#1-label-생성하기
-    public void setMarker(@Nonnull LatLng position, String labelText){
+    public void setMarker(@Nonnull LatLng position, String labelText) {
         LabelOptions options = LabelOptions.from(position)
                 .setStyles(labelStyle);
 
@@ -48,9 +49,16 @@ public class KakaoMapHandler {
         // kakaoMap.setPoiVisible(false);
     }
 
+    // 지도 위의 모든 마커를 초기화합니다.
+    public void clearMarkers() {
+        LabelLayer layer = kakaoMap.getLabelManager().getLayer();
+        if (layer != null) {
+            layer.removeAll();
+        }
+    }
+
     // 기본 마커 스타일을 가져옵니다.
-    private LabelStyles getDefaultLabelStyle()
-    {
+    private LabelStyles getDefaultLabelStyle() {
         // 마커 이미지 할당 및 텍스트 크기 및 글자 색 적용 이미지 크기 나중에 조정필요
         return kakaoMap.getLabelManager()
                 .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.loca_icon).setTextStyles(20, Color.BLACK)));

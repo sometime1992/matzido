@@ -6,6 +6,7 @@ import android.util.Log;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapView;
+import com.tech.motjip.API.HttpHelper.GetJsonAsync;
 import com.tech.motjip.API.KakaoMap.CallbackInterface.IMapStartCallback;
 import com.tech.motjip.API.KakaoMap.KakaoMapHandler;
 import com.tech.motjip.API.KakaoMap.KakaoMapStarter;
@@ -13,6 +14,7 @@ import com.tech.motjip.API.KakaoMap.Utils.MapHelper;
 import com.tech.motjip.Model.KeywordMapVO;
 import com.tech.motjip.Model.MapPostionVO;
 import com.tech.motjip.Thread.IThreadCallback;
+import com.tech.motjip.Thread.IThreadReturn1Callback;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,19 @@ public class TestController implements IMapStartCallback{
         mapStarter.start();
     }
 
+    public void showAppKey(){
+        Log.d("앱키 : ", mapStarter.getAppKey());
+    }
+
+    public void showAndroidHashKey(){
+        Log.d("해시키 : ", mapStarter.getHashKey());
+    }
+
+    // 키워드에 따른 데이터를 찾습니다.
+    public void searchMapData(String keyword, IThreadReturn1Callback<List<KeywordMapVO>> callback){
+        GetJsonAsync.GetMapSearchDataAsync(keyword,callback);
+    }
+
     // 마커를 그립니다(테스트용)
     public void drawMarker()
     {
@@ -64,6 +79,10 @@ public class TestController implements IMapStartCallback{
         mapHandler.moveCamera(targetPosition);
     }
 
+    // 맵의 마커를 초기화합니다.
+    public void clearMarkers(){
+        mapHandler.clearMarkers();
+    }
     @Override
     public void onError(Exception e) {
 
