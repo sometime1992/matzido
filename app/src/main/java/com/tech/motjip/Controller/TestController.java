@@ -59,6 +59,11 @@ public class TestController implements IMapStartCallback{
         }
     }
 
+    // 타겟 포지션으로 카메라를 이동시킵니다.
+    public void moveMapCamara(LatLng targetPosition){
+        mapHandler.moveCamera(targetPosition);
+    }
+
     @Override
     public void onError(Exception e) {
 

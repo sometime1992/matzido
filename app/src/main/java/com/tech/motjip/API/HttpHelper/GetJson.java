@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.tech.motjip.API.CustomException.KakaoRestException;
 import com.tech.motjip.Model.KakaoRestVO;
 import com.tech.motjip.Model.KeywordMapVO;
+import com.tech.motjip.Model.MapPostionVO;
 import com.tech.motjip.Utils.JsonHelper;
 
 import org.jsoup.Connection;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Http통신을 통해 특정 Json을 가져옵니다
 public class GetJson {
 
     // RestAPI 요청 주소를 담고있는 데이터 모델입니다.
@@ -42,6 +44,11 @@ public class GetJson {
         hashQuery.put("sort", "distance");
 
         return GetMapSearchData(hashQuery);
+    }
+
+    // @오버로드, 검색어, 경도, 위도, 범위에 해당하는 음식점 맵 정보 데이터를 반환합니다.
+    public static List<KeywordMapVO> GetMapSearchDataWithConditions(String query, MapPostionVO position, String radius) throws KakaoRestException{
+        return GetMapSearchDataWithConditions(query, Double.toString(position.getLngX()), Double.toString(position.getLatY()), radius);
     }
 
     // 쿼리에 해당하는 맵 정보 데이터를 반환합니다.

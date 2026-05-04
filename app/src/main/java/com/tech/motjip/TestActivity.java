@@ -1,28 +1,15 @@
 package com.tech.motjip;
 
 import android.os.Bundle;
-import android.util.Log;
-
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.kakao.vectormap.KakaoMap;
-import com.kakao.vectormap.KakaoMapReadyCallback;
-import com.kakao.vectormap.KakaoMapSdk;
-import com.kakao.vectormap.MapLifeCycleCallback;
+import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapView;
-import com.tech.motjip.API.HttpHelper.GetJson;
-import com.tech.motjip.API.KakaoMap.CallbackInterface.IMapStartCallback;
-import com.tech.motjip.API.KakaoMap.KakaoMapHandler;
-import com.tech.motjip.API.KakaoMap.KakaoMapStarter;
+import com.tech.motjip.API.HttpHelper.GetJsonAsync;
+import com.tech.motjip.API.KakaoMap.Utils.MapHelper;
 import com.tech.motjip.Controller.TestController;
 import com.tech.motjip.Handler.BaseActivity;
 import com.tech.motjip.Model.KeywordMapVO;
 import com.tech.motjip.Thread.IThreadCallback;
+import com.tech.motjip.Thread.IThreadReturn1Callback;
 
 import java.util.List;
 
@@ -41,6 +28,7 @@ public class TestActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_test);
 
         MapView mapView = findViewById(R.id.map_view);
@@ -49,30 +37,28 @@ public class TestActivity extends BaseActivity{
         callback = new IThreadCallback() {
             @Override
             public void ThreadEnds() {
-                // 통신 멀티쓰레딩 처리
-                new Thread(new Runnable() {
+                IThreadReturn1Callback<List<KeywordMapVO>> result = new IThreadReturn1Callback<List<KeywordMapVO>>() {
                     @Override
-                    public void run() {
-                        try {
-                            List<KeywordMapVO> resultList = GetJson.GetMapSearchDataWithConditions("피자", "126.8819899200535", "37.53660174890449", "2000");
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    controller.drawMarker(resultList);
-                                }
-                            });
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    public void ThreadEnds(List<KeywordMapVO> result) {
+                        controller.drawMarker(result);
+                        LatLng position = MapHelper.getLatLng(result.get(0).getX(),result.get(0).getY());
+                        controller.moveMapCamara(position);
                     }
-                }).start();
+
+                    @Override
+                    public void onError(Exception e) {
+                        e.printStackTrace();
+                    }
+                };
+
+                GetJsonAsync.GetMapSearchDataWithConditionsAsync("햄버거", "129.0192326360133","35.217951030549614","2000", result);
             }
         };
 
         controller.mapStart(mapView, callback);
     }
+
+
 
     // 추가로 지도 리사이클 핸들링 필요
     // https://apis.map.kakao.com/android_v2/docs/getting-started/quickstart/#3-지도-시작-및-kakaomap-객체-가져오기

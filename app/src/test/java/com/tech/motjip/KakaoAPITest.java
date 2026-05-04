@@ -11,8 +11,7 @@ public class KakaoAPITest {
     @Test
     public void getDataTest(){
         try{
-            // List<KeywordMapVO> vo = GetJson.GetMapSearchData("피자헛");
-            List<KeywordMapVO> vo = GetJson.GetMapSearchDataWithConditions("피자", "126.8819899200535","37.53660174890449","2000");
+            List<KeywordMapVO> vo = GetJson.GetMapSearchDataWithConditions("햄버거", "129.0192326360133","35.217951030549614","2000");
                 System.out.println("통신 성공!");
                 for(KeywordMapVO name : vo){
                     System.out.println(name.getPlace_name());
