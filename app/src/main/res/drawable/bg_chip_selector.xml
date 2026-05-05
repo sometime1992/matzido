@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Activity에서 클릭 시 아래처럼 배경 전환:
+    선택됨  → chip.setBackgroundResource(R.drawable.bg_chip_selected)
+               chip.setTextColor(Color.WHITE)
+    미선택  → chip.setBackgroundResource(R.drawable.bg_chip_unselected)
+               chip.setTextColor(Color.parseColor("#B07090"))
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#E84A8A" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <stroke
+                android:width="1.5dp"
+                android:color="#F0C0D8" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

@@ -1,14 +1,9 @@
-package com.tech.motjip;
+package com.tech.motjip.View;
 
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
@@ -17,6 +12,7 @@ import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
 import com.tech.motjip.Controller.TestController;
 import com.tech.motjip.Handler.BaseActivity;
+import com.tech.motjip.R;
 
 import javax.inject.Inject;
 

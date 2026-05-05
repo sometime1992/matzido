@@ -16,7 +16,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven(url = uri("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"))
+        // 👇 이 줄을 꼭 추가해 주세요! (kts 방식은 괄호와 큰따옴표를 씁니다)
+        maven("https://devrepo.kakao.com/nexus/content/groups/public/")
     }
 }
 

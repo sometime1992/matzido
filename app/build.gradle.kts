@@ -52,6 +52,7 @@ dependencies {
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.56.1")
 
     implementation ("com.kakao.maps.open:android:2.13.1")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -60,4 +61,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("com.kakao.sdk:v2-user:2.20.1") // 카카오 로그인
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // 서버 통신
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환기
+
+
+
 }
