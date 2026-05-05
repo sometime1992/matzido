@@ -74,31 +74,25 @@
             android:layout_marginBottom="12dp"
             android:background="#E0E0E0" />
 
-        <!-- 바텀 시트 제목 -->
-        <TextView
-            android:id="@+id/tv_result_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="8dp"
-            android:text="검색 결과"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#000000" />
-
         <!-- 뷰를 분리하는 얇은 선 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#EEEEEE" />
 
-        <!-- 검색 결과를 스크롤해서 보여줄 리스트뷰 (RecyclerView) -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_search_results"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="80dp" />
+            android:paddingBottom="80dp">
+
+            <LinearLayout
+                android:id="@+id/ll_search_result_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,31 +1,24 @@
 package com.tech.motjip;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapView;
-import com.tech.motjip.API.HttpHelper.GetJsonAsync;
 import com.tech.motjip.API.KakaoMap.Utils.MapHelper;
 import com.tech.motjip.Controller.TestController;
 import com.tech.motjip.Handler.BaseActivity;
 import com.tech.motjip.Model.KeywordMapVO;
 import com.tech.motjip.Thread.IThreadCallback;
 import com.tech.motjip.Thread.IThreadReturn1Callback;
-import com.tech.motjip.UI.SearchResultAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,8 +33,6 @@ public class TestActivity extends BaseActivity {
 
     private IThreadCallback callback;
 
-    private SearchResultAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +43,8 @@ public class TestActivity extends BaseActivity {
         EditText etSearch = findViewById(R.id.et_search);
         Button btnSearch = findViewById(R.id.btn_search);
 
-        RecyclerView recyclerView = findViewById(R.id.rv_search_results);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new SearchResultAdapter();
-        recyclerView.setAdapter(adapter);
+        LinearLayout resultContainer = findViewById(R.id.ll_search_result_container);
+        LayoutInflater inflater = LayoutInflater.from(this);
 
         // 지도 로드 끝나면 버튼 이벤트 활성화
         callback = new IThreadCallback() {
@@ -81,17 +69,36 @@ public class TestActivity extends BaseActivity {
                                     return;
                                 }
 
-                                adapter.setItems(result);
+                                // 명시적으로 주 쓰레드에서 뷰 데이터처리
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        resultContainer.removeAllViews();
 
-                                controller.clearMarkers();
-                                controller.drawMarker(result);
-                                LatLng position = MapHelper.getLatLng(result.get(0).getX(), result.get(0).getY());
-                                controller.moveMapCamara(position);
+                                        for (KeywordMapVO vo : result) {
+                                            View itemView = inflater.inflate(R.layout.item_search_result, resultContainer, false);
+                                            TextView tvCategory = itemView.findViewById(R.id.tv_category);
+                                            TextView tvName = itemView.findViewById(R.id.tv_place_name);
+                                            TextView tvAddress = itemView.findViewById(R.id.tv_address);
+
+                                            tvCategory.setText(vo.getCategory_name());
+                                            tvName.setText(vo.getPlace_name());
+                                            tvAddress.setText(vo.getRoad_address_name());
+
+                                            resultContainer.addView(itemView);
+                                        }
+
+                                        controller.clearMarkers();
+                                        controller.drawMarker(result);
+                                        LatLng position = MapHelper.getLatLng(result.get(0).getX(), result.get(0).getY());
+                                        controller.moveMapCamara(position);
+                                    }
+                                });
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                e.printStackTrace();
+                                Log.e("MapDebug", "원인: ", e);
                             }
                         };
 
