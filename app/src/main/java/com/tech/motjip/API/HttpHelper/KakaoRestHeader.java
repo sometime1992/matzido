@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KakaoRestHeader {
-    private final static String restKey = "b0b9a40e1c87fe6d5be83586b912a27a";
+    private final static String restKey = "9267fdc8361493f742543f1b9e05548f";
 
     // http 헤더 처리
     protected static Map<String, String> getHeader(){

@@ -32,10 +32,8 @@ public class TestController implements IMapStartCallback{
     // 비동기 멀티 쓰레드 작업이 완료되었음을 알립니다.
     IThreadCallback callback;
 
-    @Inject
-    TestController(Activity testActivity)
-    {
-        this.testActivity = testActivity;
+    public TestController(Activity activity){
+        this.testActivity = activity;
     }
 
     // 콜백함수를 할당하고 맵뷰에 맵을 그립니다.
@@ -45,6 +43,7 @@ public class TestController implements IMapStartCallback{
         this.callback = callback;
         mapStarter.start();
     }
+
 
     public void showAppKey(){
         Log.d("앱키 : ", mapStarter.getAppKey());

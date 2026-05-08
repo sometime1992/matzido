@@ -1,6 +1,7 @@
 package com.tech.motjip.API.KakaoMap;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.lifecycle.DefaultLifecycleObserver;
 
@@ -24,7 +25,7 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     // 카카오맵을 표시할 맵뷰입니다.
     private final MapView mapView;
     // 카카오맵에 사용될 네이티브 앱키 입니다.
-    private final String apiKey = "c2f31aa92db76b6d090b77365cf633bd";
+    private final String apiKey = "1c820c4c55f310c4d33afecc66a6e8d4";
 
     public KakaoMapStarter(@NonNull MapView mapView, @NonNull IMapStartCallback callback, @NonNull Activity activity){
         this.mapView = mapView;
@@ -77,6 +78,7 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     // 맵 에러 발생시 콜백함수에 에러 반환
     @Override
     public void onMapError(Exception e) {
+        Log.e("MapDebug", "onMapError 호출됨", e);
         callback.onError(e);
     }
 }

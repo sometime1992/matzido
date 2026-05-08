@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F7F7">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="20dp"
+        android:paddingTop="32dp">
+
+        <!-- 제목 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="bottom">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="bottom"
+                android:text="My Profile"
+                android:textColor="#111111"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnSettings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:background="@android:color/transparent"
+                android:padding="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_settings"
+                app:tint="#444444" />
+
+        </LinearLayout>
+
+        <!-- 프로필 카드 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_card_round"
+            android:padding="20dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="2dp">
+
+            <!-- 프로필 이미지 -->
+            <TextView
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:background="@drawable/bg_profile_circle"
+                android:gravity="center"
+                android:text="KM"
+                android:textColor="#FF6B00"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <!-- 유저 정보 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/tvNickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="사용자 닉네임"
+                    android:textColor="#111111"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="example@email.com"
+                    android:textColor="#666666"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 메뉴 카드 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_round"
+            android:padding="8dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="2dp">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="My Orders"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Saved Restaurants"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Delivery Addresses"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Payment Methods"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Promotions &amp; Coupons"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <!-- Help & Support -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_round"
+            android:padding="8dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help &amp; Support"
+                android:textColor="#111111"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="12dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Contact Us"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="#EEEEEE" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="FAQ"
+                android:gravity="start|center_vertical"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <!-- 로그아웃 -->
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Logout"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:backgroundTint="#FF3B30" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -8,9 +8,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.kakao.sdk.common.KakaoSdk;
+import com.tech.motjip.BuildConfig;
+
 import dagger.hilt.android.HiltAndroidApp;
 
-// 로그 관리용
 @HiltAndroidApp
 public class MotJipApp extends Application {
 
@@ -18,10 +20,17 @@ public class MotJipApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // 카카오 SDK 초기화
+        KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY);
+
         // 앱 로그 관리용
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+
             @Override
-            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+            public void onActivityCreated(
+                    @NonNull Activity activity,
+                    @Nullable Bundle savedInstanceState
+            ) {
                 Log.d("액티비티", "생성됨 : " + activity.getLocalClassName());
             }
 
@@ -46,7 +55,10 @@ public class MotJipApp extends Application {
             }
 
             @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            public void onActivitySaveInstanceState(
+                    @NonNull Activity activity,
+                    @NonNull Bundle outState
+            ) {
 
             }
 

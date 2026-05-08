@@ -67,7 +67,7 @@
         android:orientation="vertical"
         android:elevation="16dp"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="80dp"
+        app:behavior_peekHeight="40dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <!-- 디테일 포인트: 바텀 시트를 끌어올리는 손잡이(핸들) 모양 -->
