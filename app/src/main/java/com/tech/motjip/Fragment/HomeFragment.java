@@ -49,6 +49,7 @@ public class HomeFragment extends Fragment {
     private LinearLayout resultContainer;
     private View loadingView;
     private LayoutInflater inflater;
+    private Handler debounceHandler;
 
     public HomeFragment() {}
 
@@ -106,7 +107,7 @@ public class HomeFragment extends Fragment {
 
                 // 입력이 멈춘 뒤 일정 시간이 지났을 때 검색을 실행하는 디바운스 핸들러
                 // Runnable을 배열로 감싸야 객체가 바뀌지 않음 정적 배열은 한번 할당하면 객체가 안바뀜
-                Handler debounceHandler = new Handler(Looper.getMainLooper());
+                debounceHandler = new Handler(Looper.getMainLooper());
                 Runnable[] debounceRunnable = {null};
 
                 // 텍스트 체인지이벤트 처리
@@ -131,6 +132,7 @@ public class HomeFragment extends Fragment {
                         debounceRunnable[0] = () -> controller.searchMapData(keyword, new IThreadReturn1Callback<List<KeywordMapVO>>() {
                             @Override
                             public void ThreadEnds(List<KeywordMapVO> result) {
+                                if (!isAdded()) return; // Fragment 살아있는지 검증
                                 requireActivity().runOnUiThread(() -> {
                                     suggestionContainer.removeAllViews();
                                     for (KeywordMapVO vo : result) {
@@ -214,12 +216,14 @@ public class HomeFragment extends Fragment {
         controller.fetchLocation(lm, new IThreadReturn1Callback<LatLng>() {
             @Override
             public void ThreadEnds(LatLng latLng) {
+                if (!isAdded()) return; // Fragment 살아있는지 검증
                 // 성공했을경우 맵로드 가 GPS 기반 좌표값에 따라 이동됨
                 controller.mapStart(mapView, callback, latLng);
             }
 
             @Override
             public void onError(Exception e) {
+                if (!isAdded()) return; // Fragment 살아있는지 검증
                 // 실패했을 경우 기본 좌표 사용
                 controller.mapStart(mapView, callback);
             }
@@ -227,6 +231,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void openSearchOverlay() {
+        if (overlaySuggestion.getVisibility() == View.VISIBLE) return; // 이미 열려있으면 무시
         overlaySuggestion.setVisibility(View.VISIBLE);
         btnToggle.setText("▲");
     }
@@ -251,6 +256,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         // controller.onDestroy();
+        if (debounceHandler != null) {
+            debounceHandler.removeCallbacksAndMessages(null); // 예약된 검색 요청 전부 취소
+        }
         super.onDestroyView();
     }
 }
