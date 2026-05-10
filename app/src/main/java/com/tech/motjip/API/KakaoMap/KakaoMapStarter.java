@@ -25,7 +25,8 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     // 카카오맵을 표시할 맵뷰입니다.
     private final MapView mapView;
     // 카카오맵에 사용될 네이티브 앱키 입니다.
-    private final String apiKey = "1c820c4c55f310c4d33afecc66a6e8d4";
+//    private final String apiKey = "1c820c4c55f310c4d33afecc66a6e8d4";
+    private final String apiKey = "c2f31aa92db76b6d090b77365cf633bd";
 
     public KakaoMapStarter(@NonNull MapView mapView, @NonNull IMapStartCallback callback, @NonNull Activity activity){
         this.mapView = mapView;
@@ -42,11 +43,28 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
                 callback.onReady(kakaoMap);
             }
 
-            // 맵 로드시 시작 좌표
+            // 맵 로드시 시작 좌표 
+            @NonNull
+            public LatLng getPosition() {
+                return getDefaultPosition();
+            }
+        });
+    }
+
+    // 카카오맵을 시작하고 뷰에 표현하고 좌표에 따른 맵 시작점을 설정합니다.
+    public void start(LatLng startPosition){
+        mapView.start(this, new KakaoMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull KakaoMap kakaoMap) {
+                // 준비가 완료되면 카카오맵 객체를 반환합니다
+                callback.onReady(kakaoMap);
+            }
+
+            // 맵 로드시 시작 좌표 내가주기
             @Override
             @NonNull
             public LatLng getPosition() {
-                return getPostion();
+                return startPosition;
             }
         });
     }
@@ -63,8 +81,8 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
         return KakaoMapSdk.INSTANCE.getHashKey();
     }
 
-    // 현재 사용자의 위치를 반환합니다.
-    private LatLng getPostion(){
+    // 기본 디폴트 위치를 반환합니다.
+    private LatLng getDefaultPosition(){
         // 임시로 피자헛 목동점 좌표 넣어둠 나중에 내 현재 GPS 위치 가져오는 함수로 바꿈
         MapPostionVO vo = new MapPostionVO(37.53660174890449, 126.8819899200535);
         return MapHelper.getLatLng(vo);

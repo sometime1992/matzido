@@ -16,4 +16,9 @@ public class MapHelper {
         return LatLng.from(Double.parseDouble(y), Double.parseDouble(x));
     }
 
+    // 좌표가 한국 범위 내에 있는지 확인합니다.
+    public static boolean isInKorea(double lat, double lng) {
+        return lat >= 33.0 && lat <= 38.9 && lng >= 124.5 && lng <= 131.9;
+    }
+
 }
