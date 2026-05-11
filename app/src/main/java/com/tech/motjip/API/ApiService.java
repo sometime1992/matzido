@@ -11,7 +11,6 @@ import com.tech.motjip.Dto.RequestDto.StatusUpdateRequestDto;
 import com.tech.motjip.Model.ChatRoom;
 import com.tech.motjip.Model.Message;
 import java.util.List;
-import retrofit2.http.Path;
 
 import okhttp3.MultipartBody;
 
@@ -22,6 +21,8 @@ import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
+
 
 public interface ApiService {
 
