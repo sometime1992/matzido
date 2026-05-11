@@ -11,6 +11,7 @@ import com.tech.motjip.Dto.RequestDto.StatusUpdateRequestDto;
 //import com.tech.motjip.Model.ChatRoom;
 //import com.tech.motjip.Model.Message;
 //import java.util.List;
+//import retrofit2.http.Path;
 
 import okhttp3.MultipartBody;
 
