@@ -8,10 +8,9 @@ import com.tech.motjip.Dto.RequestDto.UpdateMyNicknameRequestDto;
 import com.tech.motjip.Dto.ResponseDto.LoginResponseDto;
 import com.tech.motjip.Dto.ResponseDto.TokenResponseDto;
 import com.tech.motjip.Dto.RequestDto.StatusUpdateRequestDto;
-//import com.tech.motjip.Model.ChatRoom;
-//import com.tech.motjip.Model.Message;
-//import java.util.List;
-//import retrofit2.http.Path;
+import com.tech.motjip.Model.ChatRoom;
+import com.tech.motjip.Model.Message;
+import java.util.List;
 
 import okhttp3.MultipartBody;
 
@@ -22,6 +21,8 @@ import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
+
 
 public interface ApiService {
 
@@ -64,13 +65,13 @@ public interface ApiService {
             @Body StatusUpdateRequestDto request
     );
 
-//    @GET("/api/chat/rooms")
-//    Call<List<ChatRoom>> getChatRoomList();
-//
-//    @GET("/api/chat/messages/{roomId}")
-//    Call<List<Message>> getChatMessages(@Path("roomId") Long roomId);
-//
-//    @POST("/api/chat/rooms")
-//    Call<ChatRoom> createChatRoom(@Body ChatRoom chatRoom);
+@GET("/api/chat/rooms")
+Call<List<ChatRoom>> getChatRoomList();
+
+@GET("/api/chat/messages/{roomId}")
+Call<List<Message>> getChatMessages(@Path("roomId") Long roomId);
+
+@POST("/api/chat/rooms")
+Call<ChatRoom> createChatRoom(@Body ChatRoom chatRoom);
 
 }
