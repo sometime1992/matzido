@@ -1,11 +1,13 @@
 package com.tech.motjip.API;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.tech.motjip.Dto.RequestDto.RefreshRequestDto;
 import com.tech.motjip.Dto.ResponseDto.TokenResponseDto;
+import com.tech.motjip.MainActivity;
 
 import java.io.IOException;
 
@@ -14,148 +16,314 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String TAG = "RetrofitClientDebug";
-    private static final String BASE_URL = "https://spout-distant-cost.ngrok-free.dev/";
+    private static final String TAG =
+            "RetrofitClientDebug";
 
-    private static final String PREF_NAME = "AppPrefs";
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-    private static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+    private static final String BASE_URL =
+            "https://spout-distant-cost.ngrok-free.dev/";
+
+    private static final String PREF_NAME =
+            "AppPrefs";
+
+    private static final String ACCESS_TOKEN =
+            "ACCESS_TOKEN";
+
+    private static final String REFRESH_TOKEN =
+            "REFRESH_TOKEN";
+
+    public static final String AUTH_EXPIRED_MESSAGE =
+            "AUTH_EXPIRED_MESSAGE";
 
     private static Retrofit retrofit = null;
+
     private static ApiService apiService = null;
 
-    public static ApiService getApiService(Context context) {
+    public static ApiService getApiService(
+            Context context
+    ) {
 
         if (apiService == null || retrofit == null) {
 
-            Context appContext = context.getApplicationContext();
+            Context appContext =
+                    context.getApplicationContext();
 
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            HttpLoggingInterceptor loggingInterceptor =
+                    new HttpLoggingInterceptor();
+
+            loggingInterceptor.setLevel(
+                    HttpLoggingInterceptor.Level.BODY
+            );
 
             Interceptor authInterceptor = chain -> {
 
                 SharedPreferences prefs =
-                        appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                        appContext.getSharedPreferences(
+                                PREF_NAME,
+                                Context.MODE_PRIVATE
+                        );
 
-                String accessToken = prefs.getString(ACCESS_TOKEN, null);
-                String refreshToken = prefs.getString(REFRESH_TOKEN, null);
+                String accessToken =
+                        prefs.getString(
+                                ACCESS_TOKEN,
+                                null
+                        );
 
-                Request originalRequest = chain.request();
+                String refreshToken =
+                        prefs.getString(
+                                REFRESH_TOKEN,
+                                null
+                        );
 
-                // refresh 요청 자체에는 다시 refresh 시도하지 않음
+                Request originalRequest =
+                        chain.request();
+
                 boolean isRefreshRequest =
-                        originalRequest.url().encodedPath().contains("/api/v1/auth/refresh");
+                        originalRequest
+                                .url()
+                                .encodedPath()
+                                .contains("/api/v1/auth/refresh");
 
-                Request.Builder requestBuilder = originalRequest.newBuilder();
+                Request.Builder requestBuilder =
+                        originalRequest.newBuilder();
 
-                if (!isRefreshRequest && accessToken != null && !accessToken.trim().isEmpty()) {
-                    requestBuilder.header("Authorization", "Bearer " + accessToken);
+                // AccessToken 있을 때만 Authorization 추가
+                if (!isRefreshRequest
+                        && accessToken != null
+                        && !accessToken.trim().isEmpty()) {
+
+                    requestBuilder.header(
+                            "Authorization",
+                            "Bearer " + accessToken
+                    );
                 }
 
-                Response response = chain.proceed(requestBuilder.build());
+                Response response =
+                        chain.proceed(
+                                requestBuilder.build()
+                        );
 
-                if (response.code() == 401 && !isRefreshRequest) {
-                    Log.w(TAG, "AccessToken 만료 또는 인증 실패 → refresh 시도");
+                // 인증 실패
+                if (response.code() == 401
+                        && !isRefreshRequest) {
+
+                    Log.w(
+                            TAG,
+                            "AccessToken 만료 또는 인증 실패"
+                    );
 
                     response.close();
 
-                    if (refreshToken == null || refreshToken.trim().isEmpty()) {
-                        Log.e(TAG, "RefreshToken 없음 → 로그아웃 필요");
+                    // 최초 로그인 상태 (토큰 자체 없음)
+                    if (refreshToken == null
+                            || refreshToken.trim().isEmpty()) {
+
+                        Log.d(
+                                TAG,
+                                "RefreshToken 없음 → 로그인 화면 유지"
+                        );
+
                         clearTokens(prefs);
+
                         return response;
                     }
 
-                    String newAccessToken = refreshAccessToken(appContext, refreshToken);
+                    // Refresh 시도
+                    String newAccessToken =
+                            refreshAccessToken(
+                                    appContext,
+                                    refreshToken
+                            );
 
+                    // Refresh 실패
                     if (newAccessToken == null) {
-                        Log.e(TAG, "토큰 재발급 실패 → 로그아웃 필요");
-                        clearTokens(prefs);
+
+                        Log.e(
+                                TAG,
+                                "토큰 재발급 실패 → 자동 로그아웃"
+                        );
+
+                        moveToLoginWithExpiredMessage(
+                                appContext,
+                                prefs
+                        );
+
                         return response;
                     }
 
-                    Log.d(TAG, "토큰 재발급 성공 → 원래 요청 재시도");
+                    Log.d(
+                            TAG,
+                            "토큰 재발급 성공 → 원래 요청 재시도"
+                    );
 
-                    Request retryRequest = originalRequest.newBuilder()
-                            .header("Authorization", "Bearer " + newAccessToken)
-                            .build();
+                    Request retryRequest =
+                            originalRequest
+                                    .newBuilder()
+                                    .header(
+                                            "Authorization",
+                                            "Bearer " + newAccessToken
+                                    )
+                                    .build();
 
-                    return chain.proceed(retryRequest);
+                    return chain.proceed(
+                            retryRequest
+                    );
                 }
 
                 return response;
             };
 
-            OkHttpClient httpClient = new OkHttpClient.Builder()
-                    .addInterceptor(authInterceptor)
-                    .addInterceptor(loggingInterceptor)
-                    .build();
+            OkHttpClient httpClient =
+                    new OkHttpClient.Builder()
+                            .addInterceptor(authInterceptor)
+                            .addInterceptor(loggingInterceptor)
+                            .build();
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(httpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            retrofit =
+                    new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .client(httpClient)
+                            .addConverterFactory(
+                                    GsonConverterFactory.create()
+                            )
+                            .build();
 
-            apiService = retrofit.create(ApiService.class);
+            apiService =
+                    retrofit.create(
+                            ApiService.class
+                    );
         }
 
         return apiService;
     }
 
-    private static String refreshAccessToken(Context context, String refreshToken) {
+    private static String refreshAccessToken(
+            Context context,
+            String refreshToken
+    ) {
 
         try {
-            OkHttpClient refreshClient = new OkHttpClient.Builder().build();
 
-            Retrofit refreshRetrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(refreshClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            OkHttpClient refreshClient =
+                    new OkHttpClient.Builder()
+                            .build();
 
-            ApiService refreshApiService = refreshRetrofit.create(ApiService.class);
+            Retrofit refreshRetrofit =
+                    new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .client(refreshClient)
+                            .addConverterFactory(
+                                    GsonConverterFactory.create()
+                            )
+                            .build();
+
+            ApiService refreshApiService =
+                    refreshRetrofit.create(
+                            ApiService.class
+                    );
 
             retrofit2.Response<TokenResponseDto> refreshResponse =
-                    refreshApiService.refreshToken(new RefreshRequestDto(refreshToken)).execute();
+                    refreshApiService
+                            .refreshToken(
+                                    new RefreshRequestDto(
+                                            refreshToken
+                                    )
+                            )
+                            .execute();
 
-            if (refreshResponse.isSuccessful() && refreshResponse.body() != null) {
+            if (refreshResponse.isSuccessful()
+                    && refreshResponse.body() != null) {
 
-                TokenResponseDto tokenResponse = refreshResponse.body();
+                TokenResponseDto tokenResponse =
+                        refreshResponse.body();
 
-                String newAccessToken = tokenResponse.getAccessToken();
-                String newRefreshToken = tokenResponse.getRefreshToken();
+                String newAccessToken =
+                        tokenResponse.getAccessToken();
 
-                if (newAccessToken == null || newRefreshToken == null) {
+                String newRefreshToken =
+                        tokenResponse.getRefreshToken();
+
+                if (newAccessToken == null
+                        || newRefreshToken == null) {
+
                     return null;
                 }
 
                 SharedPreferences prefs =
-                        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                        context.getSharedPreferences(
+                                PREF_NAME,
+                                Context.MODE_PRIVATE
+                        );
 
                 prefs.edit()
-                        .putString(ACCESS_TOKEN, newAccessToken)
-                        .putString(REFRESH_TOKEN, newRefreshToken)
+                        .putString(
+                                ACCESS_TOKEN,
+                                newAccessToken
+                        )
+                        .putString(
+                                REFRESH_TOKEN,
+                                newRefreshToken
+                        )
                         .apply();
 
                 return newAccessToken;
             }
 
         } catch (IOException e) {
-            Log.e(TAG, "refreshAccessToken IOException", e);
+
+            Log.e(
+                    TAG,
+                    "refreshAccessToken IOException",
+                    e
+            );
+
         } catch (Exception e) {
-            Log.e(TAG, "refreshAccessToken Exception", e);
+
+            Log.e(
+                    TAG,
+                    "refreshAccessToken Exception",
+                    e
+            );
         }
 
         return null;
     }
 
-    private static void clearTokens(SharedPreferences prefs) {
+    private static void moveToLoginWithExpiredMessage(
+            Context context,
+            SharedPreferences prefs
+    ) {
+
+        clearTokens(prefs);
+
+        Intent intent =
+                new Intent(
+                        context,
+                        MainActivity.class
+                );
+
+        intent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
+
+        intent.putExtra(
+                AUTH_EXPIRED_MESSAGE,
+                "다른 기기에서 로그인되어 로그아웃되었습니다."
+        );
+
+        context.startActivity(intent);
+    }
+
+    private static void clearTokens(
+            SharedPreferences prefs
+    ) {
+
         prefs.edit()
                 .remove(ACCESS_TOKEN)
                 .remove(REFRESH_TOKEN)

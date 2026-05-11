@@ -216,14 +216,15 @@ public class HomeFragment extends Fragment {
         controller.fetchLocation(lm, new IThreadReturn1Callback<LatLng>() {
             @Override
             public void ThreadEnds(LatLng latLng) {
-                if (!isAdded()) return; // Fragment 살아있는지 검증
+                //if (!isAdded()) return; // Fragment 살아있는지 검증
                 // 성공했을경우 맵로드 가 GPS 기반 좌표값에 따라 이동됨
                 controller.mapStart(mapView, callback, latLng);
             }
 
             @Override
             public void onError(Exception e) {
-                if (!isAdded()) return; // Fragment 살아있는지 검증
+                Log.d("test","log");
+                //if (!isAdded()) return; // Fragment 살아있는지 검증
                 // 실패했을 경우 기본 좌표 사용
                 controller.mapStart(mapView, callback);
             }

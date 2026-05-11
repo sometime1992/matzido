@@ -2,45 +2,87 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical"
+
     android:padding="24dp"
+
     android:background="#F7F7F7">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="18dp"
+
         android:text="내 정보 수정"
+
         android:textSize="28sp"
+
         android:textStyle="bold"
+
         android:textColor="#111111"
+
         android:layout_marginBottom="32dp" />
 
     <Button
         android:id="@+id/btnEditNickname"
+
         android:layout_width="match_parent"
+
         android:layout_height="56dp"
+
         android:text="닉네임 수정"
+
         android:textAllCaps="false"
+
         android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/btnEditProfileImage"
+
         android:layout_width="match_parent"
+
         android:layout_height="56dp"
+
         android:text="프로필 이미지 수정"
+
         android:textAllCaps="false"
+
         android:layout_marginBottom="16dp" />
+    <Button
+        android:id="@+id/btnLogout"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="56dp"
+
+        android:text="로그아웃"
+
+        android:textAllCaps="false"
+
+        android:layout_marginBottom="16dp"
+
+        android:backgroundTint="#FF3B30"
+
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/btnDeleteAccount"
+
         android:layout_width="match_parent"
+
         android:layout_height="56dp"
+
         android:text="회원탈퇴"
+
         android:textAllCaps="false"
+
         android:backgroundTint="#FF3B30"
+
         android:textColor="#FFFFFF" />
 
 </LinearLayout>
