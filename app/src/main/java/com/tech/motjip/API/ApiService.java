@@ -8,6 +8,9 @@ import com.tech.motjip.Dto.RequestDto.UpdateMyNicknameRequestDto;
 import com.tech.motjip.Dto.ResponseDto.LoginResponseDto;
 import com.tech.motjip.Dto.ResponseDto.TokenResponseDto;
 import com.tech.motjip.Dto.RequestDto.StatusUpdateRequestDto;
+//import com.tech.motjip.Model.ChatRoom;
+//import com.tech.motjip.Model.Message;
+//import java.util.List;
 
 import okhttp3.MultipartBody;
 
@@ -59,4 +62,14 @@ public interface ApiService {
     Call<Void> updateMyStatus(
             @Body StatusUpdateRequestDto request
     );
+
+//    @GET("/api/chat/rooms")
+//    Call<List<ChatRoom>> getChatRoomList();
+//
+//    @GET("/api/chat/messages/{roomId}")
+//    Call<List<Message>> getChatMessages(@Path("roomId") Long roomId);
+//
+//    @POST("/api/chat/rooms")
+//    Call<ChatRoom> createChatRoom(@Body ChatRoom chatRoom);
+
 }
