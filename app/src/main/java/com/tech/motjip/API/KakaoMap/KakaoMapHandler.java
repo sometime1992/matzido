@@ -5,8 +5,11 @@ import android.graphics.Color;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.camera.CameraUpdateFactory;
+import com.kakao.vectormap.label.CompetitionType;
+import com.kakao.vectormap.label.CompetitionUnit;
 import com.kakao.vectormap.label.Label;
 import com.kakao.vectormap.label.LabelLayer;
+import com.kakao.vectormap.label.LabelLayerOptions;
 import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
@@ -35,10 +38,21 @@ public class KakaoMapHandler {
     // 맵에 마커를 찍습니다.
     // https://apis.map.kakao.com/android_v2/docs/api-guide/label/label/#1-label-생성하기
     public void setMarker(@Nonnull LatLng position, String labelText) {
+
+        // 클러스터 구현 필요
+        LabelLayer layer = kakaoMap.getLabelManager().getLayer("MyClusterLayer");
+
+        if (layer == null) {
+            LabelLayerOptions layerOptions = LabelLayerOptions.from("MyClusterLayer")
+                    .setCompetitionType(CompetitionType.SameLower) // 같은 레이어 안의 마커끼리 경쟁
+                    .setCompetitionUnit(CompetitionUnit.IconAndText) // 아이콘이나 글씨가 겹치면 숨김
+                    .setZOrder(10001); // 기본 레이어보다 위에 그려지도록 설정
+
+            layer = kakaoMap.getLabelManager().addLayer(layerOptions);
+        }
+
         LabelOptions options = LabelOptions.from(position)
                 .setStyles(labelStyle);
-
-        LabelLayer layer = kakaoMap.getLabelManager().getLayer();
 
         Label label = layer.addLabel(options);
 
@@ -51,7 +65,7 @@ public class KakaoMapHandler {
 
     // 지도 위의 모든 마커를 초기화합니다.
     public void clearMarkers() {
-        LabelLayer layer = kakaoMap.getLabelManager().getLayer();
+        LabelLayer layer = kakaoMap.getLabelManager().getLayer("MyClusterLayer");
         if (layer != null) {
             layer.removeAll();
         }

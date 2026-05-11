@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-black"
-        android:text="Taste"
+        android:text="맛남의광장"
         android:textColor="#1A1A1A"
         android:textSize="56sp"
         android:textStyle="bold"

@@ -8,16 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.tech.motjip.API.RetrofitClient;
 import com.tech.motjip.Dto.RequestDto.LogoutRequestDto;
 import com.tech.motjip.Dto.ResponseDto.LoginResponseDto;
+import com.tech.motjip.FavoriteActivity;
+import com.tech.motjip.FriendActivity;
 import com.tech.motjip.MainActivity;
 import com.tech.motjip.MyInfoActivity;
 import com.tech.motjip.R;
@@ -31,7 +35,12 @@ public class ProfileFragment extends Fragment {
     private TextView tvEmail;
     private TextView tvNickname;
 
+    private ImageView ivProfileImage;
+
     private Button btnLogout;
+
+    private LinearLayout btnFavorite;
+    private LinearLayout btnFriend;
 
     private ImageButton btnSettings;
 
@@ -42,6 +51,9 @@ public class ProfileFragment extends Fragment {
 
     private static final String REFRESH_TOKEN =
             "REFRESH_TOKEN";
+
+    private static final String LOGIN_STATUS =
+            "LOGIN_STATUS";
 
     public ProfileFragment() {
     }
@@ -75,8 +87,17 @@ public class ProfileFragment extends Fragment {
         tvNickname =
                 view.findViewById(R.id.tvNickname);
 
+        ivProfileImage =
+                view.findViewById(R.id.ivProfileImage);
+
         btnLogout =
                 view.findViewById(R.id.btnLogout);
+
+        btnFavorite =
+                view.findViewById(R.id.btnFavorite);
+
+        btnFriend =
+                view.findViewById(R.id.btnFriend);
 
         btnSettings =
                 view.findViewById(R.id.btnSettings);
@@ -89,6 +110,28 @@ public class ProfileFragment extends Fragment {
                     new Intent(
                             requireContext(),
                             MyInfoActivity.class
+                    );
+
+            startActivity(intent);
+        });
+
+        btnFavorite.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            requireContext(),
+                            FavoriteActivity.class
+                    );
+
+            startActivity(intent);
+        });
+
+        btnFriend.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            requireContext(),
+                            FriendActivity.class
                     );
 
             startActivity(intent);
@@ -115,6 +158,14 @@ public class ProfileFragment extends Fragment {
                             Response<LoginResponseDto> response
                     ) {
 
+                        // Fragment 상태 확인
+                        if (!isAdded()
+                                || getContext() == null
+                                || getView() == null) {
+
+                            return;
+                        }
+
                         if (response.isSuccessful()
                                 && response.body() != null) {
 
@@ -126,6 +177,9 @@ public class ProfileFragment extends Fragment {
 
                             String nickname =
                                     user.getNickname();
+
+                            String profileImgUrl =
+                                    user.getProfileImgUrl();
 
                             tvEmail.setText(
                                     email != null
@@ -141,6 +195,26 @@ public class ProfileFragment extends Fragment {
                                             : "미설정"
                             );
 
+                            if (profileImgUrl != null
+                                    && !profileImgUrl.isEmpty()) {
+
+                                String imageUrl =
+                                        "https://spout-distant-cost.ngrok-free.dev"
+                                                + profileImgUrl;
+
+                                Glide.with(ProfileFragment.this)
+                                        .load(imageUrl)
+                                        .placeholder(R.drawable.default_profile)
+                                        .error(R.drawable.default_profile)
+                                        .into(ivProfileImage);
+
+                            } else {
+
+                                ivProfileImage.setImageResource(
+                                        R.drawable.default_profile
+                                );
+                            }
+
                         } else {
 
                             tvEmail.setText("조회 실패");
@@ -154,6 +228,14 @@ public class ProfileFragment extends Fragment {
                             Call<LoginResponseDto> call,
                             Throwable t
                     ) {
+
+                        // Fragment 상태 확인
+                        if (!isAdded()
+                                || getContext() == null
+                                || getView() == null) {
+
+                            return;
+                        }
 
                         tvEmail.setText("서버 오류");
 
@@ -222,6 +304,7 @@ public class ProfileFragment extends Fragment {
         preferences.edit()
                 .remove(ACCESS_TOKEN)
                 .remove(REFRESH_TOKEN)
+                .putInt(LOGIN_STATUS, 0)
                 .apply();
 
         Intent intent =
@@ -236,12 +319,6 @@ public class ProfileFragment extends Fragment {
         );
 
         startActivity(intent);
-
-        Toast.makeText(
-                requireContext(),
-                "로그아웃되었습니다.",
-                Toast.LENGTH_SHORT
-        ).show();
 
         requireActivity().finish();
     }

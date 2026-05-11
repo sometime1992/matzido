@@ -1,5 +1,7 @@
 pluginManagement {
+
     repositories {
+
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -7,21 +9,42 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+
         mavenCentral()
+
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositoriesMode.set(
+        RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    )
+
     repositories {
+
         google()
+
         mavenCentral()
-        maven(url = uri("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"))
-        maven(url = uri("https://devrepo.kakao.com/nexus/content/groups/public/"))
-        maven { url = uri("https://jitpack.io") }
+
+        maven(
+            url = uri(
+                "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/"
+            )
+        )
+
+        maven(
+            url = uri(
+                "https://devrepo.kakao.com/nexus/content/groups/public/"
+            )
+        )
+
+        // uCrop용 JitPack 추가
+        maven("https://jitpack.io")
     }
 }
 
 rootProject.name = "MotJip"
+
 include(":app")
- 

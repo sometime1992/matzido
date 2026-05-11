@@ -6,7 +6,10 @@ plugins {
 }
 
 val localProperties = Properties()
-localProperties.load(rootProject.file("local.properties").inputStream())
+
+localProperties.load(
+    rootProject.file("local.properties").inputStream()
+)
 
 android {
     namespace = "com.tech.motjip"
@@ -43,9 +46,7 @@ android {
             isMinifyEnabled = false
 
             proguardFiles(
-                getDefaultProguardFile(
-                    "proguard-android-optimize.txt"
-                ),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
@@ -58,14 +59,17 @@ android {
 }
 
 dependencies {
-
     implementation("org.jsoup:jsoup:1.14.3")
+
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
     implementation("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("commons-codec:commons-codec:1.15")
+
     implementation("com.google.dagger:hilt-android:2.56.1")
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.56.1")
 
@@ -76,17 +80,16 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    implementation("androidx.browser:browser:1.8.0")
-
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
+    implementation("androidx.browser:browser:1.8.0")
     implementation("com.google.android.material:material:1.12.0")
 
-    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    // 프로필 이미지 선택 및 자르기
+    implementation("com.github.yalantis:ucrop:2.2.8")
 
-
+    // 상태 코드 변경
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -94,6 +97,7 @@ dependencies {
     implementation(libs.constraintlayout)
 
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

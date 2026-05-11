@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tech.motjip.Controller.NicknameController;
 import com.tech.motjip.Dto.ResponseDto.LoginResponseDto;
+import com.tech.motjip.Utils.DialogUtil;
+import com.tech.motjip.Utils.LoginStateManager;
 
 public class NicknameActivity extends AppCompatActivity
         implements NicknameController.NicknameControllerCallback {
@@ -27,44 +29,30 @@ public class NicknameActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_nickname);
 
         nicknameController = new NicknameController(this, this);
 
-        Log.d(TAG, "========================================");
         Log.d(TAG, "onCreate() - NicknameActivity started");
 
         try {
-
             memberId = getIntent().getLongExtra("member_id", -1L);
             nickname = getIntent().getStringExtra("nickname");
 
-            Log.d(TAG, "[INTENT]");
-            Log.d(TAG, "memberId: " + memberId);
-            Log.d(TAG, "nickname: " + nickname);
-
             if (nickname != null && !nickname.trim().isEmpty()) {
 
-                Log.d(TAG, "이미 닉네임 있음 → Home 이동");
+                LoginStateManager.setLoginStatus(
+                        this,
+                        LoginStateManager.LOGIN
+                );
 
-                Intent homeIntent =
-                        new Intent(
-                                this,
-                                HomeActivity.class
-                        );
-
+                Intent homeIntent = new Intent(this, HomeActivity.class);
                 startActivity(homeIntent);
-
                 finish();
-
                 return;
             }
-
         } catch (Exception e) {
-
             Log.e(TAG, "Intent 처리 오류", e);
         }
 
@@ -89,13 +77,28 @@ public class NicknameActivity extends AppCompatActivity
                 return;
             }
 
-            if (inputNickname.length() < 2 || inputNickname.length() > 10) {
+            if (inputNickname.length() < 2
+                    || inputNickname.length() > 10) {
 
                 Toast.makeText(
                         this,
                         "닉네임은 2~10자 이내로 입력해 주세요.",
                         Toast.LENGTH_SHORT
                 ).show();
+
+                return;
+            }
+
+            // 특수문자 제한 검사
+            if (!inputNickname.matches("^[a-zA-Z0-9가-힣]+$")) {
+
+                DialogUtil.showCustomDialog(
+                        this,
+                        R.drawable.fail,
+                        "닉네임 오류",
+                        "닉네임에는 특수문자를 사용할 수 없습니다.",
+                        null
+                );
 
                 return;
             }
@@ -108,34 +111,52 @@ public class NicknameActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNicknameSuccess(LoginResponseDto user) {
+    public void onNicknameSuccess(
+            LoginResponseDto user
+    ) {
 
-        Toast.makeText(
-                NicknameActivity.this,
-                "닉네임이 설정되었습니다.",
-                Toast.LENGTH_SHORT
-        ).show();
+        // 로그인 상태 저장
+        LoginStateManager.setLoginStatus(
+                this,
+                LoginStateManager.LOGIN
+        );
 
-        Intent homeIntent =
-                new Intent(
-                        NicknameActivity.this,
-                        HomeActivity.class
-                );
+        DialogUtil.showCustomDialog(
+                this,
+                R.drawable.success,
+                "설정 완료",
+                "반가워요! 닉네임 설정이 완료되었습니다.",
+                () -> {
 
-        homeIntent.putExtra("LOGIN_USER_INFO", user);
+                    Intent homeIntent =
+                            new Intent(
+                                    NicknameActivity.this,
+                                    HomeActivity.class
+                            );
 
-        startActivity(homeIntent);
+                    homeIntent.putExtra(
+                            "LOGIN_USER_INFO",
+                            user
+                    );
 
-        finish();
+                    startActivity(homeIntent);
+
+                    finish();
+                }
+        );
     }
 
     @Override
-    public void onNicknameFail(String message) {
+    public void onNicknameFail(
+            String message
+    ) {
 
-        Toast.makeText(
-                NicknameActivity.this,
+        DialogUtil.showCustomDialog(
+                this,
+                R.drawable.fail,
+                "설정 실패",
                 message,
-                Toast.LENGTH_SHORT
-        ).show();
+                null
+        );
     }
 }
