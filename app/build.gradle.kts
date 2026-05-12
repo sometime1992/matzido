@@ -38,6 +38,10 @@ android {
         ndk {
             abiFilters.add("arm64-v8a")
             abiFilters.add("armeabi-v7a")
+
+            // 추가
+            abiFilters.add("x86")
+            abiFilters.add("x86_64")
         }
     }
 
@@ -90,6 +94,11 @@ dependencies {
 
     // 상태 코드 변경
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+
+    // 채팅 관련
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+
 
     implementation(libs.appcompat)
     implementation(libs.material)
