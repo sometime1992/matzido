@@ -26,6 +26,11 @@ public class JsonHelper {
         // 파싱된 배열을 리스트 객체로 반환합니다.
         return Arrays.asList(parsedArray);
     }
+
+    // @ 오버로드, 원본 JSON문자열을 지정된 클래스 객체로 파싱하여 반환합니다.
+    public static <T> T getJsonFromString(String htmlBody, Class<T> clazz) {
+        return new Gson().fromJson(htmlBody, clazz);
+    }
     // JSON객체가 null인지를 검증합니다.
     public static boolean isJsonEmpty(JsonObject jsonObject){
         return (jsonObject == null || jsonObject.isJsonNull() || jsonObject.isEmpty());

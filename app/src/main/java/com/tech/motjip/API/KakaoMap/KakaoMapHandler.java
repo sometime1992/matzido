@@ -14,7 +14,11 @@ import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
 import com.kakao.vectormap.label.LabelTextBuilder;
+import com.tech.motjip.API.KakaoMap.CallbackInterface.IViewDetailItemClickCallback;
+import com.tech.motjip.Model.KeywordMapVO;
 import com.tech.motjip.R;
+
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -23,10 +27,16 @@ import lombok.NonNull;
 public class KakaoMapHandler {
     private final KakaoMap kakaoMap;
     private LabelStyles labelStyle;
+    private LabelStyles clusterStyle;
+    private final ClusterManager clusterManager;
+    private int lastZoomLevel = -1;  // 줌 변경 감지용
 
     public KakaoMapHandler(KakaoMap kakaomap) {
         this.kakaoMap = kakaomap;
         this.labelStyle = getDefaultLabelStyle();
+        this.clusterStyle = getClusterLabelStyle();
+        this.clusterManager = new ClusterManager(kakaoMap, labelStyle, clusterStyle);
+        setupCameraListener();
     }
 
     // 카메라를 이동시킵니다.
@@ -35,9 +45,14 @@ public class KakaoMapHandler {
         kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(position));
     }
 
-    // 맵에 마커를 찍습니다.
+    // 맵에 마커를 찍습니다. (테스트용 - vo 없는 버전)
     // https://apis.map.kakao.com/android_v2/docs/api-guide/label/label/#1-label-생성하기
     public void setMarker(@Nonnull LatLng position, String labelText) {
+        setMarker(position, labelText, null);
+    }
+
+    // @오버로드 맵에 마커를 찍고 KeywordMapVO를 라벨에 tag로 보관합니다 (클릭 추적용).
+    public void setMarker(@Nonnull LatLng position, String labelText, KeywordMapVO vo) {
 
         // 클러스터 구현 필요
         LabelLayer layer = kakaoMap.getLabelManager().getLayer("MyClusterLayer");
@@ -55,6 +70,8 @@ public class KakaoMapHandler {
                 .setStyles(labelStyle);
 
         Label label = layer.addLabel(options);
+        // 클릭 시 어떤 가게인지 알 수 있도록 vo를 tag로 보관
+        if (vo != null) label.setTag(vo);
 
         // https://apis.map.kakao.com/android_v2/docs/api-guide/label/label/#스타일-및-텍스트-변경
         // 이부분 api문서에없음...LabelTextBuilder 클래스에 대한 확인 필요
@@ -63,12 +80,50 @@ public class KakaoMapHandler {
         // kakaoMap.setPoiVisible(false);
     }
 
+    // 검색 결과 마커 목록을 통째로 설정합니다 (클러스터링 적용).
+    public void setMarkers(List<KeywordMapVO> markers) {
+        clusterManager.setMarkers(markers);
+        lastZoomLevel = kakaoMap.getZoomLevel();
+    }
+
+    // 마커 클릭 이벤트 리스너를 등록합니다.
+    public void setMarkerClickListener(IViewDetailItemClickCallback callback) {
+        kakaoMap.setOnLabelClickListener(new KakaoMap.OnLabelClickListener() {
+            @Override
+            public boolean onLabelClicked(KakaoMap kakaoMap, LabelLayer labelLayer, Label label) {
+                Object tag = label.getTag();
+                if (tag instanceof KeywordMapVO && callback != null) {
+                    // 일반 마커 클릭 — 상세페이지 열기
+                    callback.onItemClick((KeywordMapVO) tag);
+                } else if (tag instanceof List) {
+                    // 클러스터 마커 클릭 — 줌 인 (자동으로 카메라 이벤트 발생 → 재계산)
+                    zoomInOnCluster();
+                }
+                return true;
+            }
+        });
+    }
+
     // 지도 위의 모든 마커를 초기화합니다.
     public void clearMarkers() {
-        LabelLayer layer = kakaoMap.getLabelManager().getLayer("MyClusterLayer");
-        if (layer != null) {
-            layer.removeAll();
-        }
+        clusterManager.clear();
+    }
+
+    // 줌 변경될 때만 클러스터 재계산 (단순 이동은 무시)
+    private void setupCameraListener() {
+        kakaoMap.setOnCameraMoveEndListener((map, cameraPosition, gestureType) -> {
+            int currentZoom = kakaoMap.getZoomLevel();
+            if (currentZoom != lastZoomLevel) {
+                lastZoomLevel = currentZoom;
+                clusterManager.redraw();
+            }
+        });
+    }
+
+    // 클러스터 마커 클릭 시 두 단계 줌 인 → 카메라 이벤트 트리거되어 자동 재계산됨
+    private void zoomInOnCluster() {
+        int currentZoom = kakaoMap.getZoomLevel();
+        kakaoMap.moveCamera(CameraUpdateFactory.zoomTo(currentZoom + 2));
     }
 
     // 기본 마커 스타일을 가져옵니다.
@@ -76,5 +131,11 @@ public class KakaoMapHandler {
         // 마커 이미지 할당 및 텍스트 크기 및 글자 색 적용 이미지 크기 나중에 조정필요
         return kakaoMap.getLabelManager()
                 .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.loca_icon).setTextStyles(20, Color.BLACK)));
+    }
+
+    // 클러스터 마커 스타일 (큰 빨간 글자로 일반 마커와 구분)
+    private LabelStyles getClusterLabelStyle() {
+        return kakaoMap.getLabelManager()
+                .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.loca_icon).setTextStyles(32, Color.RED)));
     }
 }

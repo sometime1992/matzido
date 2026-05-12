@@ -18,6 +18,7 @@ import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapView;
 import com.tech.motjip.R;
 import com.tech.motjip.API.HttpHelper.GetJsonAsync;
+import com.tech.motjip.API.KakaoMap.CallbackInterface.IViewDetailItemClickCallback;
 import com.tech.motjip.API.KakaoMap.CallbackInterface.IMapStartCallback;
 import com.tech.motjip.API.KakaoMap.KakaoMapHandler;
 import com.tech.motjip.API.KakaoMap.KakaoMapStarter;
@@ -118,12 +119,20 @@ public class TestController implements IMapStartCallback{
         mapHandler.setMarker(MapHelper.getLatLng(new MapPostionVO(37.53660174890449, 126.8819899200535)), "테스트 입니다");
     }
 
-    // 검색 결과값에 따른 마커를 그립니다.
+    // 검색 결과값에 따른 마커를 그립니다 (클러스터링 적용).
     public void drawMarker(List<KeywordMapVO> vo)
     {
-        for(KeywordMapVO voList : vo){
-            LatLng postion = MapHelper.getLatLng(voList.getX(),voList.getY());
-            mapHandler.setMarker(postion,voList.getPlace_name());
+        // 마커 목록 통째로 전달 — 클러스터링은 ClusterManager에서 자동 처리
+        mapHandler.setMarkers(vo);
+    }
+
+    // 마커 클릭 이벤트 리스너를 등록합니다 (리스트 클릭과 동일하게 카메라 이동까지 처리).
+    public void setMarkerClickListener(IViewDetailItemClickCallback callback){
+        if (mapHandler != null) {
+            mapHandler.setMarkerClickListener(vo -> {
+                callback.onItemClick(vo);
+                focusOnPlace(vo);
+            });
         }
     }
 
@@ -154,7 +163,8 @@ public class TestController implements IMapStartCallback{
             LinearLayout resultContainer,
             LinearLayout suggestionContainer,
             View overlaySuggestion,
-            LayoutInflater inflater) {
+            LayoutInflater inflater,
+            IViewDetailItemClickCallback onItemClick) {
         return new IThreadReturn1Callback<List<KeywordMapVO>>() {
             @Override
             public void ThreadEnds(List<KeywordMapVO> result) {
@@ -176,7 +186,13 @@ public class TestController implements IMapStartCallback{
                         ((TextView) itemView.findViewById(R.id.tv_category)).setText(vo.getCategory_name());
                         ((TextView) itemView.findViewById(R.id.tv_place_name)).setText(vo.getPlace_name());
                         ((TextView) itemView.findViewById(R.id.tv_address)).setText(vo.getRoad_address_name());
-                        itemView.setOnClickListener(v -> focusOnPlace(vo));
+                        // 리스트에서 클릭이벤트 발생시 상세페이지 실행
+                        itemView.setOnClickListener(v -> {
+                            // 클릭 이벤트를 콜백으로 위임 (UI 처리는 HomeFragment 책임)
+                            // 상세페이지를 실행함
+                            onItemClick.onItemClick(vo);
+                            focusOnPlace(vo);
+                        });
                         resultContainer.addView(itemView);
                     }
 

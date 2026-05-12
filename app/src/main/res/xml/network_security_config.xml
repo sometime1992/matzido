@@ -2,5 +2,10 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">spout-distant-cost.ngrok-free.dev</domain>
+        <!-- 카카오 장소 사진 CDN (HTTP) -->
+        <domain includeSubdomains="true">daumcdn.net</domain>
+        <domain includeSubdomains="true">kakaocdn.net</domain>
+        <domain includeSubdomains="true">kakao.co.kr</domain>
+        <domain includeSubdomains="true">pstatic.net</domain>
     </domain-config>
 </network-security-config>

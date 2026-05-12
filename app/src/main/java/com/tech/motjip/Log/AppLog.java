@@ -89,6 +89,17 @@ public class AppLog {
     }
 
     /**
+     * response 값 테스트용 (JVM 테스트 환경에서 System.out 출력)
+     */
+    public void printSystemExcute(Connection.Response response){
+        System.out.println("response 주소: " + response.url());
+        System.out.println("response 응답코드: " + response.statusCode());
+        response.headers().keySet().forEach(s -> System.out.println("response 헤더: " + s + " / " + response.headers().get(s)));
+        response.cookies().keySet().forEach(s -> System.out.println("response 쿠키: " + s + " / " + response.cookies().get(s)));
+        System.out.println("response 보디: " + response.body());
+    }
+
+    /**
      * 맵배열 널체크
      */
     private boolean isMapEmpty(Map<?, ?> map){

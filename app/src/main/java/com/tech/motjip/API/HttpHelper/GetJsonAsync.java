@@ -2,6 +2,7 @@ package com.tech.motjip.API.HttpHelper;
 
 import com.tech.motjip.Model.KeywordMapVO;
 import com.tech.motjip.Model.MapPostionVO;
+import com.tech.motjip.Model.PlaceDetailModel.PlaceDetailVO;
 import com.tech.motjip.Thread.IThreadReturn1Callback;
 
 import java.util.List;
@@ -33,5 +34,17 @@ public class GetJsonAsync {
 
     public static void GetMapSearchDataWithConditions(String query, MapPostionVO position, String radius, IThreadReturn1Callback<List<KeywordMapVO>> callback){
         GetMapSearchDataWithConditionsAsync(query, Double.toString(position.getLngX()), Double.toString(position.getLatY()), radius, callback);
+    }
+
+    // place_url에 해당하는 장소 상세 데이터를 비동기로 가져옵니다.
+    public static void GetPlaceDetailAsync(String placeUrl, IThreadReturn1Callback<PlaceDetailVO> callback){
+        new Thread(() -> {
+            try {
+                PlaceDetailVO data = GetJson.GetPlaceDetail(placeUrl);
+                callback.ThreadEnds(data);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
     }
 }

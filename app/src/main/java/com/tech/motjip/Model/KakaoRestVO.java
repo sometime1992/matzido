@@ -11,4 +11,7 @@ public class KakaoRestVO {
     // https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-keyword
     private final String mapSearch = domain + "local/search/keyword.json";
 
+    // 장소 상세 정보 (카카오 내부 API, 공식 dapi 도메인 아님)
+    private final String placeDetail = "https://place-api.map.kakao.com/places/panel3/";
+
 }

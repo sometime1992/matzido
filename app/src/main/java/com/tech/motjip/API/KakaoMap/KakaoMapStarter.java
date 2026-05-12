@@ -17,8 +17,8 @@ import com.tech.motjip.Model.MapPostionVO;
 
 import lombok.NonNull;
 
-// 카카오맵을 초기화하고 뷰에 표시합니다.(맵객체 라이프사이클 제어를 위해 DefaultLifecycleObserver로 액티비티의 옵저버로 연결할필요있음)
-public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLifecycleObserver {
+// 카카오맵을 초기화하고 뷰에 표시합니다.
+public class KakaoMapStarter extends MapLifeCycleCallback {
 
     // 콜백함수의 객체입니다.
     private final IMapStartCallback callback;
@@ -26,9 +26,9 @@ public class KakaoMapStarter extends MapLifeCycleCallback implements DefaultLife
     private final MapView mapView;
     // 카카오맵에 사용될 네이티브 앱키 입니다.
     //private final String apiKey = "1c820c4c55f310c4d33afecc66a6e8d4";
-    private final String apiKey = "fc96e5701f247062fd7a0af17ce8e526";
+    //private final String apiKey = "fc96e5701f247062fd7a0af17ce8e526";
 
-    // private final String apiKey = "c2f31aa92db76b6d090b77365cf633bd";
+    private final String apiKey = "c2f31aa92db76b6d090b77365cf633bd";
 
     public KakaoMapStarter(@NonNull MapView mapView, @NonNull IMapStartCallback callback, @NonNull Activity activity){
         this.mapView = mapView;
