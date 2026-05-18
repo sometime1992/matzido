@@ -91,6 +91,8 @@ dependencies {
 
     // 프로필 이미지 선택 및 자르기
     implementation("com.github.yalantis:ucrop:2.2.8")
+    // 게시글 이미지 보여주기
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // 상태 코드 변경
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")

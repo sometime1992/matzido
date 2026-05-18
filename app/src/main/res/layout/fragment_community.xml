@@ -1,15 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#FFFFFF">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="커뮤니티 기능 추후 추가"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_gravity="center" />
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:background="@drawable/bg_search_round">
+
+                    <ImageView
+                        android:id="@+id/btnSearch"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_search"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:tint="#444444" />
+
+                    <EditText
+                        android:id="@+id/etSearchTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:background="@android:color/transparent"
+                        android:hint="제목 검색"
+                        android:textColor="#111111"
+                        android:textColorHint="#777777"
+                        android:textSize="15sp"
+                        android:singleLine="true"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnWrite"
+                    android:layout_width="110dp"
+                    android:layout_height="58dp"
+                    android:layout_marginStart="12dp"
+                    android:text="글쓰기"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    android:backgroundTint="#F59D31" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="지역 전체 〉"
+                android:textColor="#111111"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Categories"
+                    android:textColor="#111111"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvShowAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체보기 〉"
+                    android:textColor="#777777"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/btnKorean"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:src="@drawable/korean"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/btnWestern"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/western"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/btnJapanese"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/japanese"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/btnChinese"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/chinese"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/btnStreetFood"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/streetfood"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/btnCafe"
+                        android:layout_width="78dp"
+                        android:layout_height="94dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/cafe"
+                        android:scaleType="fitCenter"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewPosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                android:paddingBottom="20dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

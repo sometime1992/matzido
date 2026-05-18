@@ -24,32 +24,19 @@
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MotJip">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
-        <!--
-        <activity
-            android:name=".MockActivity"
-            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        -->
-        <!--
-        <activity
-            android:name=".SplashActivity"
-            android:exported="false"
-            android:theme="@style/Theme.MotJip" />
-        -->
 
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -59,7 +46,9 @@
                 <data
                     android:scheme="motjip"
                     android:host="main" />
+
             </intent-filter>
+
         </activity>
 
         <activity
@@ -68,6 +57,17 @@
 
         <activity
             android:name=".HomeActivity"
+            android:exported="false" />
+
+        <!-- 추가된 글쓰기 화면 -->
+        <activity
+            android:name=".WriteActivity"
+            android:exported="true">
+
+        </activity>
+
+        <activity
+            android:name=".CommunityDetailActivity"
             android:exported="false" />
 
         <activity
@@ -94,7 +94,6 @@
         <activity
             android:name=".MessageActivity"
             android:exported="false" />
-
 
     </application>
 

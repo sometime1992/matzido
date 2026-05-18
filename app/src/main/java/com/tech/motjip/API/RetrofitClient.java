@@ -25,7 +25,7 @@ public class RetrofitClient {
     private static final String TAG =
             "RetrofitClientDebug";
 
-    private static final String BASE_URL =
+    public static final String BASE_URL =
             "https://spout-distant-cost.ngrok-free.dev/";
 
     private static final String PREF_NAME =
@@ -92,7 +92,6 @@ public class RetrofitClient {
                 Request.Builder requestBuilder =
                         originalRequest.newBuilder();
 
-                // AccessToken 있을 때만 Authorization 추가
                 if (!isRefreshRequest
                         && accessToken != null
                         && !accessToken.trim().isEmpty()) {
@@ -108,7 +107,6 @@ public class RetrofitClient {
                                 requestBuilder.build()
                         );
 
-                // 인증 실패
                 if (response.code() == 401
                         && !isRefreshRequest) {
 
@@ -119,7 +117,6 @@ public class RetrofitClient {
 
                     response.close();
 
-                    // 최초 로그인 상태 (토큰 자체 없음)
                     if (refreshToken == null
                             || refreshToken.trim().isEmpty()) {
 
@@ -133,14 +130,12 @@ public class RetrofitClient {
                         return response;
                     }
 
-                    // Refresh 시도
                     String newAccessToken =
                             refreshAccessToken(
                                     appContext,
                                     refreshToken
                             );
 
-                    // Refresh 실패
                     if (newAccessToken == null) {
 
                         Log.e(
