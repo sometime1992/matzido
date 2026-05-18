@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tech.motjip.API.ApiService; // 🚀 팀 통합 ApiService 사용
+import com.tech.motjip.API.RetrofitClient; // 🚀 공용 레트로핏 클라이언트 추가
 import com.tech.motjip.MessageActivity;
 import com.tech.motjip.Model.ChatRoom;
 import com.tech.motjip.R;
@@ -29,15 +30,12 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChatFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ChatRoomAdapter adapter;
     private List<ChatRoom> roomList = new ArrayList<>();
-    private final String BASE_URL = "http://10.0.2.2:8080/";
 
     public ChatFragment() {
         // 마스터에 있던 기본 생성자 유지
@@ -90,13 +88,8 @@ public class ChatFragment extends Fragment {
 
     // 🚀 서버에 새로운 방 저장 요청
     private void createNewRoom(String roomName) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // 🚀 MotJipApiService 대신 공통 ApiService 사용
-        ApiService apiService = retrofit.create(ApiService.class);
+        // 🚀 개별 빌더 설정을 지우고, 토큰 신분증이 자동으로 탑재된 공용 apiService를 가져옵니다.
+        ApiService apiService = RetrofitClient.getApiService(getContext());
 
         ChatRoom newRoom = new ChatRoom();
         newRoom.setRoomName(roomName);
@@ -124,12 +117,9 @@ public class ChatFragment extends Fragment {
     }
 
     private void loadChatRooms() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        // 🚀 목록 로딩 시에도 동일하게 공용 apiService를 사용해 토큰 누락을 방지합니다.
+        ApiService apiService = RetrofitClient.getApiService(getContext());
 
-        ApiService apiService = retrofit.create(ApiService.class);
         apiService.getChatRoomList().enqueue(new Callback<List<ChatRoom>>() {
             @Override
             public void onResponse(Call<List<ChatRoom>> call, Response<List<ChatRoom>> response) {

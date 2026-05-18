@@ -1,6 +1,8 @@
 package com.tech.motjip;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -8,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,19 +19,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tech.motjip.Controller.MessageAdapter;
 import com.tech.motjip.API.ApiService;
+import com.tech.motjip.API.RetrofitClient;
 import com.tech.motjip.Handler.PreferenceManager;
 import com.tech.motjip.Model.Message;
+import com.tech.motjip.Dto.ResponseDto.LoginResponseDto;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 
@@ -40,7 +45,7 @@ public class MessageActivity extends AppCompatActivity {
     private EditText etMessage;
     private Button btnSend;
 
-    private String currentUserId;
+    private String currentUserId; // 내부 식별용 (이제 숫자 ID 문자열이 들어옵니다)
     private String currentNickname;
     private long roomId = -1;
 
@@ -58,12 +63,8 @@ public class MessageActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.et_message);
         btnSend = findViewById(R.id.btn_send);
 
-        currentUserId = PreferenceManager.getUserEmail(this);
-        currentNickname = PreferenceManager.getNickname(this);
-        if (currentNickname == null) currentNickname = "익명";
-
         messageList = new ArrayList<>();
-        adapter = new MessageAdapter(messageList, currentUserId);
+        adapter = new MessageAdapter(messageList, "");
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -99,18 +100,58 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         if (roomId != -1) {
-            loadChatHistory();
-            connectWebSocket();
+            fetchUserInfoAndStartChat();
         }
     }
 
-    private void loadChatHistory() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    private void fetchUserInfoAndStartChat() {
+        RetrofitClient.getApiService(this).getCurrentUser().enqueue(new Callback<LoginResponseDto>() {
+            @Override
+            public void onResponse(@NonNull Call<LoginResponseDto> call, @NonNull Response<LoginResponseDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponseDto user = response.body();
 
-        ApiService apiService = retrofit.create(ApiService.class);
+                    // 🚀 핵심 수정: 이메일 대신 팀원들이 만든 고유 회원 번호(memberId)를 가져와서 저장합니다!
+                    if (user.getMemberId() != null) {
+                        currentUserId = String.valueOf(user.getMemberId());
+                    }
+                    currentNickname = user.getNickname();
+
+                    PreferenceManager.saveNickname(MessageActivity.this, currentNickname);
+                }
+
+                // 방어 코드: 숫자가 비어있거나 기존 이메일 형식이 남아있으면 안전하게 "0"으로 초기화
+                if (currentUserId == null || currentUserId.trim().isEmpty() || currentUserId.contains("@")) {
+                    currentUserId = "0";
+                }
+                if (currentNickname == null || currentNickname.trim().isEmpty()) {
+                    currentNickname = PreferenceManager.getNickname(MessageActivity.this);
+                    if (currentNickname == null) currentNickname = "익명";
+                }
+
+                // 내 말풍선 정렬용 어댑터 동기화
+                adapter = new MessageAdapter(messageList, currentUserId);
+                recyclerView.setAdapter(adapter);
+
+                loadChatHistory();
+                connectWebSocket();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LoginResponseDto> call, @NonNull Throwable t) {
+                Log.e(TAG, "유저 정보 로드 실패", t);
+                currentUserId = "0";
+                currentNickname = PreferenceManager.getNickname(MessageActivity.this);
+                if (currentNickname == null) currentNickname = "익명";
+
+                loadChatHistory();
+                connectWebSocket();
+            }
+        });
+    }
+
+    private void loadChatHistory() {
+        ApiService apiService = RetrofitClient.getApiService(this);
         apiService.getChatMessages(roomId).enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(@NonNull Call<List<Message>> call, @NonNull Response<List<Message>> response) {
@@ -134,17 +175,29 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 }
             }
+
+
             @Override
-            public void onFailure(@NonNull Call<List<Message>> call, @NonNull Throwable t) {}
+            public void onFailure(@NonNull Call<List<Message>> call, @NonNull Throwable t) {
+                Log.e(TAG, "채팅 내역 로드 실패", t);
+            }
         });
     }
 
     @SuppressLint("CheckResult")
     private void connectWebSocket() {
-        String url = "ws://10.0.2.2:8080/ws/chat/websocket";
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url);
+        String url = "ws://localhost:8080/ws/chat/websocket";
 
-        // 🚀 1. 상태 감지만 담당 (구독은 여기서 안 함)
+        Map<String, String> connectHeaders = new HashMap<>();
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        String accessToken = prefs.getString("ACCESS_TOKEN", null);
+
+        if (accessToken != null && !accessToken.trim().isEmpty()) {
+            connectHeaders.put("Authorization", "Bearer " + accessToken);
+        }
+
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url, connectHeaders);
+
         stompClient.lifecycle().subscribe(lifecycleEvent -> {
             switch (lifecycleEvent.getType()) {
                 case OPENED: Log.d(TAG, "🎉 서버 연결 성공!"); break;
@@ -153,7 +206,6 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        // 🚀 2. 메시지 수신 구독 (OPENED 밖으로 빼서 딱 1번만 구독하게 강제함)
         stompClient.topic("/sub/chat/room/" + roomId).subscribe(topicMessage -> {
             String receivedData = topicMessage.getPayload();
             try {
@@ -181,14 +233,25 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage(String content) {
         try {
-            JSONObject payload = new JSONObject();
-            payload.put("roomId", roomId);
-            payload.put("senderId", currentUserId);
-            payload.put("senderNickname", currentNickname);
-            payload.put("messageContent", content);
+            if (stompClient != null && stompClient.isConnected()) {
+                JSONObject payload = new JSONObject();
+                payload.put("roomId", roomId);
 
-            stompClient.send("/pub/chat/message", payload.toString()).subscribe();
-            etMessage.setText("");
+                // 🚀 핵심 수정: 문자열 숫자를 진짜 숫자(Long)로 파싱하여 JSON에 실어 보냅니다!
+                try {
+                    payload.put("senderId", Long.parseLong(currentUserId));
+                } catch (NumberFormatException e) {
+                    payload.put("senderId", 0L);
+                }
+
+                payload.put("senderNickname", currentNickname);
+                payload.put("messageContent", content);
+
+                stompClient.send("/pub/chat/message", payload.toString()).subscribe();
+                etMessage.setText("");
+            } else {
+                Toast.makeText(this, "서버와 연결이 끊겨 메시지를 보낼 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {}
     }
 

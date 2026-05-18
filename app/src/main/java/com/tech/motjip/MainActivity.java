@@ -156,18 +156,14 @@ public class MainActivity extends BaseActivity
         );
 
         btnGoogleLogin.setOnClickListener(v -> {
+            String url = "https://accounts.google.com/o/oauth2/v2/auth"
+                    + "?client_id=578669991449-hd5p76amsc8mcfmp00lbbpnahlj9edcg.apps.googleusercontent.com" // <-- 여기 수정!
+                    + "&redirect_uri=http://localhost:8080/login/oauth2/code/google"
+                    + "&response_type=code"
+                    + "&scope=openid%20email%20profile";
 
-            String url =
-                    "https://accounts.google.com/o/oauth2/v2/auth?"
-                            + "client_id=733059527774-sb6lg9a1nfiuicv713h62gr9kvjmfpul.apps.googleusercontent.com"
-                            + "&redirect_uri=https://spout-distant-cost.ngrok-free.dev/login/oauth2/code/google"
-                            + "&response_type=code"
-                            + "&scope=openid%20email%20profile";
-
-            WebBrowserUtil.openWebBrowser(
-                    this,
-                    url
-            );
+            Log.d("MainActivityDebug", "Request URL: " + url);
+            WebBrowserUtil.openWebBrowser(this, url);
         });
     }
 
@@ -259,4 +255,17 @@ public class MainActivity extends BaseActivity
 
         finish();
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent); // 들어온 신호를 이 액티비티의 인텐트로 설정
+
+        // 기철님이 만드신 컨트롤러의 로직을 여기서 그대로 호출만 해주면 됩니다.
+        if (mainController != null) {
+            mainController.handleDeepLinkIfNeeded(intent);
+        }
+    }
+
+
 }
