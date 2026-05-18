@@ -24,6 +24,7 @@ import com.tech.motjip.FavoriteActivity;
 import com.tech.motjip.FriendActivity;
 import com.tech.motjip.MainActivity;
 import com.tech.motjip.MyInfoActivity;
+import com.tech.motjip.Handler.PreferenceManager;
 import com.tech.motjip.R;
 
 import retrofit2.Call;
@@ -147,7 +148,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadMyInfo() {
-
         RetrofitClient.getApiService(requireContext())
                 .getCurrentUser()
                 .enqueue(new Callback<LoginResponseDto>() {
@@ -157,47 +157,40 @@ public class ProfileFragment extends Fragment {
                             Call<LoginResponseDto> call,
                             Response<LoginResponseDto> response
                     ) {
-
                         // Fragment 상태 확인
-                        if (!isAdded()
-                                || getContext() == null
-                                || getView() == null) {
-
+                        if (!isAdded() || getContext() == null || getView() == null) {
                             return;
                         }
 
-                        if (response.isSuccessful()
-                                && response.body() != null) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            LoginResponseDto user = response.body();
+                            String email = user.getEmail();
+                            String nickname = user.getNickname();
+                            String profileImgUrl = user.getProfileImgUrl();
 
-                            LoginResponseDto user =
-                                    response.body();
+                            // 🚀 [여기에 추가!] 서버에서 가져온 새 계정 정보를 PreferenceManager에 저장합니다.
+                            // 혹시 프로젝트 내부의 저장 함수명이 put이 아니라 save 등으로 다르면 그 이름에 맞춰주세요!
+                            if (email != null) {
+                                PreferenceManager.saveUserEmail(requireContext(), email);
+                            }
+                            if (nickname != null) {
+                                PreferenceManager.saveNickname(requireContext(), nickname);
+                            }
 
-                            String email =
-                                    user.getEmail();
-
-                            String nickname =
-                                    user.getNickname();
-
-                            String profileImgUrl =
-                                    user.getProfileImgUrl();
-
+                            // 기존 화면 세팅 코드들
                             tvEmail.setText(
-                                    email != null
-                                            && !email.isEmpty()
+                                    email != null && !email.isEmpty()
                                             ? email
                                             : "조회된 계정"
                             );
 
                             tvNickname.setText(
-                                    nickname != null
-                                            && !nickname.isEmpty()
+                                    nickname != null && !nickname.isEmpty()
                                             ? nickname
                                             : "미설정"
                             );
 
-                            if (profileImgUrl != null
-                                    && !profileImgUrl.isEmpty()) {
-
+                            if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
                                 String imageUrl =
                                         "https://spout-distant-cost.ngrok-free.dev"
                                                 + profileImgUrl;
@@ -209,16 +202,13 @@ public class ProfileFragment extends Fragment {
                                         .into(ivProfileImage);
 
                             } else {
-
                                 ivProfileImage.setImageResource(
                                         R.drawable.default_profile
                                 );
                             }
 
                         } else {
-
                             tvEmail.setText("조회 실패");
-
                             tvNickname.setText("조회 실패");
                         }
                     }
